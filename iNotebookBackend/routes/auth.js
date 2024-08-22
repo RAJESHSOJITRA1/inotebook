@@ -3,10 +3,12 @@ const router = express.Router();
 const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
-const JWT_SECRET="rajesh sojitra 1";
+const jwt = require('jsonwebtoken');    //json web token
+const JWT_SECRET = "rajesh sojitra 1";
+const fetchuser=require('../middleware/fetchuser')
 
-// create a user using :POST "api/auth/createuser"    No login require
+
+//ROUTE:1 create a user using :POST "api/auth/createuser"    No login require
 router.post(
   "/createuser",
   [
@@ -39,23 +41,72 @@ router.post(
         email: req.body.email,
         password: secPass,
       });
-      const data={
-        user:{
-          id:user.id
+      const data = {
+        user: {
+          id: user.id
         }
       }
-     const authtoken=   jwt.sign(data,JWT_SECRET)
-     res.json({ authtoken }); 
+      const authtoken = jwt.sign(data, JWT_SECRET)
+      res.json({ authtoken });
 
       res.json({ user }); //response that enter data by user
     } catch (error) {
       console.error(error.message);
-      res.status(500).send("Some error is occured");
+      res.status(500).send("Internal server error occured");
     }
   }
 );
-module.exports = router;
+//ROUTE:2 create a User using :POST "api/auth/login"    No login require
+router.post("/login",
+  [
+    body("email", "enter a valid email").isEmail(),
+    body("password", "password is not matching").exists(),
+  ],
+  async (req, res) => {
+    //    if there are error are error returnes bad request
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    //using destructuring method of js
+    const { email, password } = req.body;
 
-//   .then(name => res.json(name))
-//   .catch(error=>res.json(error));
-//   res.send(req.body)
+    try {
+      let user = await User.findOne({ email }); //find user in database
+      if (!user) {
+        return res.status(400).json({ error: "please re enter the email" });
+      }
+      const passwordCompare = await bcrypt.compare(password, user.password);
+      if (!passwordCompare) {
+        return res.status(400).json({ error: "please re enter the password correctly" });
+      }
+      const data = {
+        user: {
+          id: user.id,
+        },
+      };
+      const authtoken = jwt.sign(data, JWT_SECRET);
+      res.json({ authtoken });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal server error occured");
+    }
+
+  }
+);
+
+//ROUTE:2 Get Login User Deatails using :POST "api/auth/getuser"     login required
+router.post("/getuser",fetchuser,async (req, res) => {
+    
+  try {
+    userId=req.user.id
+      const user= await   User.findById(userId).select("-password")
+      res.send(user);
+  } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Internal server error")
+  }
+}
+)
+
+module.exports = router;
