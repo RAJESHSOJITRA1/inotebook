@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
   // card for  each note 
+import NoteContext from "../Context/Notes/NoteContext";
+import { useContext } from "react";
 const Noteitem = (props) => {
+  const  context = useContext(NoteContext); 
+  const { deleteNote } = context;
   const { note } = props;
   return (
     <>
@@ -9,7 +13,8 @@ const Noteitem = (props) => {
           <div className="card-body">
             <div className="d-flex align-items-center">
             <h5 className="card-title">Title : {note.title}</h5>
-            <i className="fa-solid fa-trash-can  mx-2" style={{color: "#b82000"}}></i>
+            <i className="fa-solid fa-trash-can  mx-2" style={{color: "#b82000"}}
+             onClick={()=>{deleteNote(note._id)}}></i>
             <i className="fa-regular fa-pen-to-square mx-3" style={{color: "blue"}}></i>
 
             </div>
