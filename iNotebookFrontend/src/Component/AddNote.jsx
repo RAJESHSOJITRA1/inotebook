@@ -9,12 +9,13 @@ const AddNote = () => {
     const [note,setNote]=useState({title:"",description:"",tag:""})
    
     const handleClick=(e)=>{
-        e.preventDefault();
-        addNote(note.title,note.description,note.tag);
+        e.preventDefault(); // when Add Note clicked page not reload
+        addNote(note.title,note.description,note.tag);  
     }
-    const handleChange=(e)=>{
-        setNote({...note,[e.target.name]: e.target.value})      //...note spread operator for added previous value
-    }
+        // e  = event
+    const handleChange=(e)=>{                      //below line name is title,desc.. that  value will be change
+        setNote({...note,[e.target.name]: e.target.value})      //...note is spread operator for added previous value
+    }  
   return (
    <>   
      <div className="container my-3">
@@ -22,12 +23,12 @@ const AddNote = () => {
           <form action="POST">  
             <div className="form-group">
               <label htmlFor="exampleInputEmail1">Title</label>
-              <input type="text" className="form-control" id="title" name="title" aria-describedby="emailHelp" placeholder="Enter email"  onChange={handleChange} />   {/*onChange */  }  
-              <small id="emailHelp" className="form-text text-muted">Well never share your email with anyone else.</small>
+              <input type="text" className="form-control" id="title" name="title" aria-describedby="emailHelp" placeholder="Enter Title of your note"  onChange={handleChange} />   {/*onChange */  }  
+              <small id="title" className="form-text text-muted">Well never share your Title with anyone else.</small>
             </div>
             <div className="form-group">
               <label htmlFor="description">Description</label>
-              <input type="text" className="form-control" id="description" name="description" placeholder="Password" onChange={handleChange} />   {/*onChange */  }  
+              <input type="text" className="form-control" id="description" name="description" placeholder="Note Description " onChange={handleChange} />   {/*onChange */  }  
             </div>
             <div className="form-group">
               <label htmlFor="tag">Tag</label>
