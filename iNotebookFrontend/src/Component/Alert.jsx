@@ -1,12 +1,14 @@
 import React from "react";
+/* eslint-disable react/prop-types */
+
 
 const Alert = (props) => {
   return (
-    <div>
-      <div className="alert alert-danger" role="alert">
-      {props.message}
+    props.alert && (
+      <div className={`alert alert-${props.alert.type}`} role="alert">
+        {props.alert.message}
       </div>
-    </div>
+    )
   );
 };
 
